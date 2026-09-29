@@ -52,20 +52,6 @@ Designed to be used by humans **and AI coding agents** — clone, run, done.
 
 <br>
 
-## Why This Happens
-
-Based on direct investigation into Google's account backend, there are **4 root causes:**
-
-| &nbsp; | Cause | Effect | Fix |
-|:---:|-------|--------|-----|
-| **1** | Age verification incomplete | Google backend returns `VALIDATION_REQUIRED` (403) | Verify via selfie at myaccount.google.com |
-| **2** | Phone number verification stuck | Google asks to "verify your device" via QR code on smartphone, loop fails | Click "Try another way" → use SMS instead |
-| **3** | Stale credential cache | Expired OAuth token still being used, rejected by server | Clear `.gemini/` + Windows Credential Manager |
-| **4** | Stuck OAuth app connection | Antigravity app permission stuck in Google account | Revoke app connection, re-login |
-
-> This tool handles **causes #3 and #4 automatically.** Causes #1 and #2 require manual steps — the tool guides you through them.
-
-<br>
 
 ## Install
 
