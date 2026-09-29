@@ -20,8 +20,14 @@ Eligibility check failed: Your current account is not eligible for Antigravity.
 There was an unexpected issue setting up your account.
 Your current account is not eligible for gemini code assist for individuals at this time.
 ```
+```
+403 Forbidden — VALIDATION_REQUIRED
+```
 
-**Sound familiar?** This tool fixes it.  
+**Sound familiar?** This tool fixes it.
+
+Resolves: **9router 403 errors** · **Antigravity account not eligible** · **Gemini Code Assist login failures** · **Phone number verification stuck on smartphone** · **Stale OAuth credentials**
+
 Also works for **9router** and other providers that use Google Antigravity / Gemini Code Assist as their backend.
 
 ---
@@ -42,15 +48,16 @@ Designed to be used by humans **and AI coding agents** — clone, run, done.
 
 ## Why This Happens
 
-Based on direct investigation into Google's account backend, there are **3 root causes:**
+Based on direct investigation into Google's account backend, there are **4 root causes:**
 
 | &nbsp; | Cause | Effect | Fix |
 |:---:|-------|--------|-----|
 | **1** | Age verification incomplete | Google backend returns `VALIDATION_REQUIRED` (403) | Verify via selfie at myaccount.google.com |
-| **2** | Stale credential cache | Expired OAuth token still being used, rejected by server | Clear `.gemini/` + Windows Credential Manager |
-| **3** | Stuck OAuth app connection | Antigravity app permission stuck in Google account | Revoke app connection, re-login |
+| **2** | Phone number verification stuck | Google asks to "verify your device" via QR code on smartphone, loop fails | Click "Try another way" → use SMS instead |
+| **3** | Stale credential cache | Expired OAuth token still being used, rejected by server | Clear `.gemini/` + Windows Credential Manager |
+| **4** | Stuck OAuth app connection | Antigravity app permission stuck in Google account | Revoke app connection, re-login |
 
-> This tool handles **causes #2 and #3 automatically.** Cause #1 requires manual verification (selfie/ID upload) since Google enforces direct interaction.
+> This tool handles **causes #3 and #4 automatically.** Causes #1 and #2 require manual steps — the tool guides you through them.
 
 <br>
 
