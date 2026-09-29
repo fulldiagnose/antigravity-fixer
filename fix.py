@@ -59,8 +59,18 @@ STRINGS = {
         "step3_desc": "Google memblokir Antigravity (403) jika akun belum terverifikasi usia.\nBrowser Incognito otomatis dibuka ke halaman verifikasi resmi Google.",
         "step3_instruction": "1. Login dengan akun Google kamu di jendela browser yang terbuka.\n2. Pilih opsi [bold]'Ambil selfie'[/bold] (biasanya langsung disetujui dalam 1 menit).\n3. Selesaikan selfie, lalu kembali ke terminal ini.",
         "press_enter_step3": "Tekan ENTER jika sudah menyelesaikan verifikasi selfie...",
-        "final_title": "Perbaikan Selesai! Siap Login Ulang",
-        "final_desc": "Akun dan cache sudah bersih total!\nSekarang jalankan perintah Antigravity resmi di terminal untuk login baru:\n\n  👉 [bold cyan]agy -p \"halo\"[/bold cyan]\n\nAntigravity akan otomatis membuka browser resmi Google untuk login tanpa error 403.",
+        "final_title": "Langkah Terakhir: Login & Tempel Token Otorisasi",
+        "final_desc": (
+            "1. Jendela terminal baru otomatis dibuka untuk menjalankan: [bold cyan]agy -p \"halo\"[/bold cyan]\n"
+            "2. Di browser resmi Google yang terbuka, login dengan akun yang sudah diverifikasi.\n"
+            "3. Setelah login berhasil, halaman Google akan menampilkan [bold yellow]kode token otorisasi[/bold yellow] (berawalan [bold]4/0A...[/bold]).\n"
+            "4. [bold green]Salin (Copy)[/bold green] kode token tersebut dari halaman web.\n"
+            "5. [bold green]Tempel (Paste)[/bold green] ke jendela terminal [bold cyan]agy[/bold cyan] pada baris:\n"
+            "   [dim]'Or, paste the authorization code here and press Enter:'[/dim]\n"
+            "6. Tekan [bold]ENTER[/bold] — Akun langsung aktif tanpa error 403!"
+        ),
+        "launching_terminal": "Membuka jendela terminal baru untuk menjalankan agy...",
+        "manual_cmd_hint": "Jika jendela terminal tidak otomatis terbuka, buka terminal baru lalu jalankan manual:\n  [bold cyan]agy -p \"halo\"[/bold cyan]",
         "clean_only_done": "[bold green]Selesai![/bold green] Cache lokal dan kredensial lama berhasil dibersihkan.",
     },
     "en": {
@@ -82,8 +92,18 @@ STRINGS = {
         "step3_desc": "Google blocks Antigravity (403) if your account lacks age verification.\nAn Incognito browser is opening to the official Google verification page.",
         "step3_instruction": "1. Sign in with your Google account in the opened browser window.\n2. Choose [bold]'Take a selfie'[/bold] (approval is usually instant within 1 min).\n3. Finish selfie verification, then return to this terminal.",
         "press_enter_step3": "Press ENTER after completing selfie verification...",
-        "final_title": "Fix Complete! Ready for Fresh Login",
-        "final_desc": "Your account and cache are now 100% clean!\nRun official Antigravity CLI in terminal to re-login:\n\n  👉 [bold cyan]agy -p \"hello\"[/bold cyan]\n\nAntigravity will open the official login page with zero 403 errors.",
+        "final_title": "Final Step: Sign In & Paste Authorization Token",
+        "final_desc": (
+            "1. A new terminal window is automatically opened running: [bold cyan]agy -p \"hello\"[/bold cyan]\n"
+            "2. Complete the Google sign-in on the official browser window that opens.\n"
+            "3. Upon successful sign-in, Google will display an [bold yellow]authorization code / token[/bold yellow] (starts with [bold]4/0A...[/bold]).\n"
+            "4. [bold green]Copy[/bold green] that token code from the webpage.\n"
+            "5. [bold green]Paste[/bold green] it into the [bold cyan]agy[/bold cyan] terminal prompt at:\n"
+            "   [dim]'Or, paste the authorization code here and press Enter:'[/dim]\n"
+            "6. Press [bold]ENTER[/bold] — Account authorized with zero 403 errors!"
+        ),
+        "launching_terminal": "Opening a new terminal window to run agy...",
+        "manual_cmd_hint": "If the terminal window does not open automatically, run this command in a new terminal:\n  [bold cyan]agy -p \"hello\"[/bold cyan]",
         "clean_only_done": "[bold green]Done![/bold green] Local cache and stale credentials purged.",
     }
 }
@@ -114,6 +134,37 @@ def pick_language():
     lang = Prompt.ask("  [bold cyan]›[/bold cyan]", choices=["1", "2"], default="1")
     console.clear()
     return STRINGS["id"] if lang == "1" else STRINGS["en"]
+
+
+def launch_agy_terminal():
+    """Launch a new terminal window running agy -p in parallel."""
+    import subprocess
+    import shutil
+
+    if sys.platform == "win32":
+        try:
+            subprocess.Popen(["cmd", "/c", "start", "cmd", "/k", 'agy -p "halo"'], shell=False)
+            return True
+        except Exception:
+            return False
+    elif sys.platform == "darwin":
+        try:
+            subprocess.Popen(["osascript", "-e", 'tell app "Terminal" to do script "agy -p \\"hello\\""'])
+            return True
+        except Exception:
+            return False
+    else:
+        for term in ["x-terminal-emulator", "gnome-terminal", "konsole", "xfce4-terminal", "alacritty", "kitty", "xterm"]:
+            if shutil.which(term):
+                try:
+                    if term == "gnome-terminal":
+                        subprocess.Popen([term, "--", "agy", "-p", "hello"])
+                    else:
+                        subprocess.Popen([term, "-e", "agy -p 'hello'"])
+                    return True
+                except Exception:
+                    continue
+        return False
 
 
 # ─── MAIN PIPELINE ──────────────────────────────────────────────────────────
@@ -164,11 +215,16 @@ def run_pipeline(email, password, s):
     # ── SELESAI & INSTRUKSI LOGIN
     console.print()
     console.print(Panel(
-        f"[bold green]{s['final_title']}[/bold green]\n\n{s['final_desc']}",
+        f"[bold green]{s['final_title']}[/bold green]\n\n"
+        f"{s['final_desc']}\n\n"
+        f"[dim]{s['manual_cmd_hint']}[/dim]",
         border_style="green",
         box=box.ROUNDED,
         padding=(1, 2)
     ))
+
+    step_spinner(s["launching_terminal"], 1.5)
+    launch_agy_terminal()
     return 0
 
 

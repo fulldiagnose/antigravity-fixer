@@ -91,10 +91,15 @@ Follow the guided steps on screen:
    - Windows Credential Manager / Keychain / Secret Service
 4. **Revoke App Permission**: Automatically revokes stuck OAuth connections in your Google Account.
 5. **Selfie Verification**: Automatically launches an Incognito browser to `myaccount.google.com/age-verification`. Complete the selfie check and press Enter.
-6. **Re-login**: Test with your fresh login:
-   ```bash
-   agy -p "hello"
-   ```
+6. **Automatic Terminal Launch & Token Auth**:
+   - A new terminal window automatically opens running `agy -p "hello"`.
+   - In the official Google browser page that opens, sign in with your verified account.
+   - Upon sign-in, Google displays an authorization code token (starts with `4/0A...`).
+   - Copy that token, paste it into the waiting `agy` terminal prompt:
+     ```
+     Or, paste the authorization code here and press Enter:
+     ```
+   - Press **ENTER** — your account is now authorized with zero 403 errors!
 
 ### Quick Clean Only
 
@@ -113,29 +118,15 @@ This tool is designed to be called by AI coding agents (Hermes, Aider, Cursor, C
 **Recommended workflow:**
 
 ```
-Step 1 → python fix.py diagnose --email <email>
-         Read output, identify the problem
+Step 1 → Verify Google Account age verification:
+         Instruct user to complete selfie check at https://myaccount.google.com/age-verification
 
-Step 2 → If age verification is incomplete:
-         Instruct user to open https://myaccount.google.com/age-verification
-         Verify via selfie/ID (± 1 minute, auto-approved)
+Step 2 → python fix.py --clean-only
+         Purge stale credentials, CLI cache, and Desktop App/IDE state
 
-Step 3 → python fix.py clean
-         Clear stale credentials
-
-Step 4 → If still failing:
-         python fix.py fix --email <email>
-         Full reset: clean + revoke + re-auth
-
-Step 5 → Test: agy -p "say ok"
-         If output is normal, account is fixed
+Step 3 → agy -p "hello"
+         Prompt user to copy the 4/0A... authorization token from the browser and paste into agy
 ```
-
-**Exit codes:**
-| Code | Meaning |
-|------|---------|
-| `0` | Success / account OK |
-| `1` | Problem found (check output) |
 
 <br>
 
