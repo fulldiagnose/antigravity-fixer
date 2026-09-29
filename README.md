@@ -34,7 +34,7 @@ Also works for **9router** and other providers that use Google Antigravity / Gem
 
 ### How It Works
 
-<img src="https://raw.githubusercontent.com/fulldiagnose/antigravity-fixer/main/assets/how-it-works.png" alt="How It Works" width="100%">
+<img src="https://raw.githubusercontent.com/fulldiagnose/antigravity-fixer/main/assets/how-it-works.png" alt="How It Works" width="800">
 
 ---
 
