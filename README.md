@@ -91,15 +91,17 @@ Follow the guided steps on screen:
    - Windows Credential Manager / Keychain / Secret Service
 4. **Revoke App Permission**: Automatically revokes stuck OAuth connections in your Google Account.
 5. **Selfie Verification**: Automatically launches an Incognito browser to `myaccount.google.com/age-verification`. Complete the selfie check and press Enter.
-6. **Automatic Terminal Launch & Token Auth**:
-   - A new terminal window automatically opens running `agy -p "hello"`.
-   - In the official Google browser page that opens, sign in with your verified account.
-   - Upon sign-in, Google displays an authorization code token (starts with `4/0A...`).
-   - Copy that token, paste it into the waiting `agy` terminal prompt:
+6. **Automatic Antigravity CLI Login Test**:
+   - Immediately after selfie verification, a new terminal opens and runs `agy`.
+   - Select **option 1** in the Antigravity CLI login menu.
+   - Let `agy` open the official Google sign-in page automatically—this fixer does not open a separate OAuth URL.
+   - Sign in with the Google account that just completed selfie verification.
+   - Google displays an authorization code (usually starts with `4/0A...`).
+   - Copy the code and paste it into the waiting `agy` prompt:
      ```
      Or, paste the authorization code here and press Enter:
      ```
-   - Press **ENTER** — your account is now authorized with zero 403 errors!
+   - Press **ENTER** to complete sign-in.
 
 ### Quick Clean Only
 
@@ -124,8 +126,8 @@ Step 1 → Verify Google Account age verification:
 Step 2 → python fix.py --clean-only
          Purge stale credentials, CLI cache, and Desktop App/IDE state
 
-Step 3 → agy -p "hello"
-         Prompt user to copy the 4/0A... authorization token from the browser and paste into agy
+Step 3 → agy
+         Select option 1, let agy open Google sign-in, then copy the 4/0A... authorization code from the browser and paste it into agy
 ```
 
 <br>

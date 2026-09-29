@@ -59,18 +59,19 @@ STRINGS = {
         "step3_desc": "Google memblokir Antigravity (403) jika akun belum terverifikasi usia.\nBrowser Incognito otomatis dibuka ke halaman verifikasi resmi Google.",
         "step3_instruction": "1. Login dengan akun Google kamu di jendela browser yang terbuka.\n2. Pilih opsi [bold]'Ambil selfie'[/bold] (biasanya langsung disetujui dalam 1 menit).\n3. Selesaikan selfie, lalu kembali ke terminal ini.",
         "press_enter_step3": "Tekan ENTER jika sudah menyelesaikan verifikasi selfie...",
-        "final_title": "Langkah Terakhir: Login & Tempel Token Otorisasi",
+        "final_title": "Langkah Terakhir: Pembuktian Login via Antigravity CLI",
         "final_desc": (
-            "1. Jendela terminal baru otomatis dibuka untuk menjalankan: [bold cyan]agy -p \"halo\"[/bold cyan]\n"
-            "2. Di browser resmi Google yang terbuka, login dengan akun yang sudah diverifikasi.\n"
-            "3. Setelah login berhasil, halaman Google akan menampilkan [bold yellow]kode token otorisasi[/bold yellow] (berawalan [bold]4/0A...[/bold]).\n"
-            "4. [bold green]Salin (Copy)[/bold green] kode token tersebut dari halaman web.\n"
-            "5. [bold green]Tempel (Paste)[/bold green] ke jendela terminal [bold cyan]agy[/bold cyan] pada baris:\n"
+            "1. Jendela terminal baru otomatis dibuka dan menjalankan [bold cyan]agy[/bold cyan].\n"
+            "2. Pada menu login Antigravity CLI, pilih [bold yellow]nomor 1[/bold yellow].\n"
+            "3. Biarkan [bold cyan]agy[/bold cyan] membuka halaman login Google di browser secara otomatis.\n"
+            "4. Login dengan akun Google yang baru selesai diverifikasi melalui selfie.\n"
+            "5. Setelah berhasil, Google menampilkan kode token otorisasi (biasanya berawalan [bold]4/0A...[/bold]).\n"
+            "6. [bold green]Salin[/bold green] token dari browser, lalu [bold green]tempel[/bold green] ke terminal [bold cyan]agy[/bold cyan] pada prompt:\n"
             "   [dim]'Or, paste the authorization code here and press Enter:'[/dim]\n"
-            "6. Tekan [bold]ENTER[/bold] — Akun langsung aktif tanpa error 403!"
+            "7. Tekan [bold]ENTER[/bold] untuk menyelesaikan login."
         ),
-        "launching_terminal": "Membuka jendela terminal baru untuk menjalankan agy...",
-        "manual_cmd_hint": "Jika jendela terminal tidak otomatis terbuka, buka terminal baru lalu jalankan manual:\n  [bold cyan]agy -p \"halo\"[/bold cyan]",
+        "launching_terminal": "Membuka terminal baru dan menjalankan Antigravity CLI...",
+        "manual_cmd_hint": "Jika terminal tidak terbuka otomatis, buka terminal baru lalu jalankan:\n  [bold cyan]agy[/bold cyan]\nSetelah itu pilih nomor 1.",
         "clean_only_done": "[bold green]Selesai![/bold green] Cache lokal dan kredensial lama berhasil dibersihkan.",
     },
     "en": {
@@ -92,18 +93,19 @@ STRINGS = {
         "step3_desc": "Google blocks Antigravity (403) if your account lacks age verification.\nAn Incognito browser is opening to the official Google verification page.",
         "step3_instruction": "1. Sign in with your Google account in the opened browser window.\n2. Choose [bold]'Take a selfie'[/bold] (approval is usually instant within 1 min).\n3. Finish selfie verification, then return to this terminal.",
         "press_enter_step3": "Press ENTER after completing selfie verification...",
-        "final_title": "Final Step: Sign In & Paste Authorization Token",
+        "final_title": "Final Step: Verify Login via Antigravity CLI",
         "final_desc": (
-            "1. A new terminal window is automatically opened running: [bold cyan]agy -p \"hello\"[/bold cyan]\n"
-            "2. Complete the Google sign-in on the official browser window that opens.\n"
-            "3. Upon successful sign-in, Google will display an [bold yellow]authorization code / token[/bold yellow] (starts with [bold]4/0A...[/bold]).\n"
-            "4. [bold green]Copy[/bold green] that token code from the webpage.\n"
-            "5. [bold green]Paste[/bold green] it into the [bold cyan]agy[/bold cyan] terminal prompt at:\n"
+            "1. A new terminal window automatically opens and runs [bold cyan]agy[/bold cyan].\n"
+            "2. In the Antigravity CLI login menu, select [bold yellow]option 1[/bold yellow].\n"
+            "3. Let [bold cyan]agy[/bold cyan] open the Google sign-in page in your browser automatically.\n"
+            "4. Sign in with the Google account that just completed selfie verification.\n"
+            "5. Google displays an authorization code (usually starts with [bold]4/0A...[/bold]).\n"
+            "6. [bold green]Copy[/bold green] the token from the browser and [bold green]paste[/bold green] it into the [bold cyan]agy[/bold cyan] terminal prompt:\n"
             "   [dim]'Or, paste the authorization code here and press Enter:'[/dim]\n"
-            "6. Press [bold]ENTER[/bold] — Account authorized with zero 403 errors!"
+            "7. Press [bold]ENTER[/bold] to complete sign-in."
         ),
-        "launching_terminal": "Opening a new terminal window to run agy...",
-        "manual_cmd_hint": "If the terminal window does not open automatically, run this command in a new terminal:\n  [bold cyan]agy -p \"hello\"[/bold cyan]",
+        "launching_terminal": "Opening a new terminal and launching Antigravity CLI...",
+        "manual_cmd_hint": "If the terminal does not open automatically, open a new terminal and run:\n  [bold cyan]agy[/bold cyan]\nThen select option 1.",
         "clean_only_done": "[bold green]Done![/bold green] Local cache and stale credentials purged.",
     }
 }
@@ -137,19 +139,19 @@ def pick_language():
 
 
 def launch_agy_terminal():
-    """Launch a new terminal window running agy -p in parallel."""
+    """Launch a new terminal window running interactive Antigravity CLI."""
     import subprocess
     import shutil
 
     if sys.platform == "win32":
         try:
-            subprocess.Popen(["cmd", "/c", "start", "cmd", "/k", 'agy -p "halo"'], shell=False)
+            subprocess.Popen(["cmd", "/c", "start", "cmd", "/k", "agy"], shell=False)
             return True
         except Exception:
             return False
     elif sys.platform == "darwin":
         try:
-            subprocess.Popen(["osascript", "-e", 'tell app "Terminal" to do script "agy -p \\"hello\\""'])
+            subprocess.Popen(["osascript", "-e", 'tell app "Terminal" to do script "agy"'])
             return True
         except Exception:
             return False
@@ -158,9 +160,9 @@ def launch_agy_terminal():
             if shutil.which(term):
                 try:
                     if term == "gnome-terminal":
-                        subprocess.Popen([term, "--", "agy", "-p", "hello"])
+                        subprocess.Popen([term, "--", "agy"])
                     else:
-                        subprocess.Popen([term, "-e", "agy -p 'hello'"])
+                        subprocess.Popen([term, "-e", "agy"])
                     return True
                 except Exception:
                     continue

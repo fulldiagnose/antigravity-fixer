@@ -28,10 +28,13 @@ def _login(page, email, password):
     pwd_input.fill(password)
     time.sleep(0.5)
     page.click("#passwordNext")
-    time.sleep(8)
+    time.sleep(5)
+
+    from antigravity_fixer.browser import handle_google_prompt_challenge
+    handle_google_prompt_challenge(page, timeout=90)
 
     # Check if login succeeded (URL should not be on sign-in page)
-    return "signin" not in page.url.lower() or "challenge" in page.url.lower()
+    return "signin" not in page.url.lower() and "challenge" not in page.url.lower()
 
 
 def check_age_verification(page):

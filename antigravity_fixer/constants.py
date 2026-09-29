@@ -60,23 +60,8 @@ SUPPORTED_COUNTRIES = {
     "Tokelau", "Tonga", "Tuvalu", "Vanuatu", "Wallis and Futuna",
 }
 
-# Antigravity OAuth endpoints
-ANTIGRAVITY_OAUTH_URL = (
-    "https://accounts.google.com/o/oauth2/auth"
-    "?client_id=1071006060591-tmhssin2h21lcre235vtolojh4g403ep.apps.googleusercontent.com"
-    "&redirect_uri=https%3A%2F%2Fantigravity.google%2Foauth-callback"
-    "&response_type=code"
-    "&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform"
-    "+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email"
-    "+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile"
-    "+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcclog"
-    "+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fexperimentsandconfigs"
-    "+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Faicode"
-    "+openid"
-    "&access_type=offline"
-    "&prompt=consent"
-    "&code_challenge_method=S256"
-)
+# Official Antigravity OAuth URL is generated dynamically by `agy` with
+# a fresh PKCE code challenge and state. Do not construct or open it here.
 
 # Google account URLs
 AGE_VERIFICATION_URL = "https://myaccount.google.com/age-verification"
