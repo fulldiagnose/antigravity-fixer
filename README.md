@@ -32,6 +32,32 @@ Also works for **9router** and other providers that use Google Antigravity / Gem
 
 ---
 
+### How It Works
+
+```mermaid
+graph LR
+    A["❌ Error 403"] --> B["🔍 Diagnose"]
+    B --> C{"Age Verified?"}
+    C -- No --> D["📸 Selfie Verify"]
+    D --> E["🧹 Clean Cache"]
+    C -- Yes --> E
+    E --> F{"Still Failing?"}
+    F -- Yes --> G["🔄 Full Fix"]
+    G --> H["✅ Working"]
+    F -- No --> H
+
+    style A fill:#dc2626,color:#fff,stroke:none
+    style B fill:#2563eb,color:#fff,stroke:none
+    style C fill:#7c3aed,color:#fff,stroke:none
+    style D fill:#f59e0b,color:#fff,stroke:none
+    style E fill:#0891b2,color:#fff,stroke:none
+    style F fill:#7c3aed,color:#fff,stroke:none
+    style G fill:#ea580c,color:#fff,stroke:none
+    style H fill:#16a34a,color:#fff,stroke:none
+```
+
+---
+
 [Why This Happens](#why-this-happens) · [Install](#install) · [Usage](#usage) · [AI Agent Guide](#ai-agent-integration) · [Troubleshooting](#troubleshooting)
 
 </div>
