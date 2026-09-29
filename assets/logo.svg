@@ -1,25 +1,96 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#1a1a2e"/>
-      <stop offset="100%" stop-color="#16213e"/>
+    <!-- Rainbow gradient along the arch path -->
+    <linearGradient id="archGrad" x1="0" y1="200" x2="200" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4285F4"/>
+      <stop offset="20%" stop-color="#00BFA5"/>
+      <stop offset="40%" stop-color="#34A853"/>
+      <stop offset="55%" stop-color="#A8D84E"/>
+      <stop offset="65%" stop-color="#FBBC04"/>
+      <stop offset="78%" stop-color="#F4511E"/>
+      <stop offset="88%" stop-color="#EA4335"/>
+      <stop offset="100%" stop-color="#9C27B0"/>
     </linearGradient>
-    <linearGradient id="accent" x1="30" y1="30" x2="90" y2="90" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#e94560"/>
-      <stop offset="100%" stop-color="#0f3460"/>
+
+    <!-- Band-aid / plaster gradient -->
+    <linearGradient id="bandaid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E8C89E"/>
+      <stop offset="15%" stop-color="#DEB887"/>
+      <stop offset="50%" stop-color="#D4A76A"/>
+      <stop offset="85%" stop-color="#DEB887"/>
+      <stop offset="100%" stop-color="#E8C89E"/>
     </linearGradient>
   </defs>
-  <rect width="120" height="120" rx="24" fill="url(#bg)"/>
-  <!-- Wrench -->
-  <g transform="translate(60,60) rotate(-45)">
-    <rect x="-6" y="-30" width="12" height="40" rx="3" fill="#e94560"/>
-    <circle cx="0" cy="-30" r="14" fill="none" stroke="#e94560" stroke-width="5"/>
-    <circle cx="0" cy="-30" r="6" fill="url(#bg)"/>
-    <rect x="-4" y="8" width="8" height="22" rx="2" fill="#e94560" opacity="0.7"/>
+
+  <!-- === ANTIGRAVITY ARCH LOGO === -->
+  <!-- Outer arch shape (stylized A without crossbar) -->
+  <path d="
+    M 50,185
+    C 50,185 42,175 38,155
+    C 30,120 28,90 45,55
+    C 55,32 70,18 100,10
+    C 130,18 145,32 155,55
+    C 172,90 170,120 162,155
+    C 158,175 150,185 150,185
+    L 140,185
+    C 140,185 148,170 152,150
+    C 158,125 160,95 148,65
+    C 140,42 128,30 100,22
+    C 72,30 60,42 52,65
+    C 40,95 42,125 48,150
+    C 52,170 60,185 60,185
+    Z
+  " fill="url(#archGrad)"/>
+
+  <!-- === CRACK on the right leg === -->
+  <path d="
+    M 148,100 L 145,108 L 150,115 L 146,124 L 151,130 L 147,140
+  " stroke="#444" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+
+  <!-- Small crack fragments -->
+  <path d="M 145,108 L 141,112" stroke="#444" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.4"/>
+  <path d="M 150,115 L 153,118" stroke="#444" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.4"/>
+  <path d="M 146,124 L 142,126" stroke="#444" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.35"/>
+
+  <!-- === BAND-AID / HANSAPLAST #1 (diagonal, over the crack) === -->
+  <g transform="translate(148, 118) rotate(-25)">
+    <rect x="-22" y="-8" width="44" height="16" rx="3" ry="3" fill="url(#bandaid)" stroke="#C4A265" stroke-width="0.5"/>
+    <!-- Perforated dots left -->
+    <circle cx="-17" cy="-4" r="1" fill="#C4A265" opacity="0.4"/>
+    <circle cx="-17" cy="0" r="1" fill="#C4A265" opacity="0.4"/>
+    <circle cx="-17" cy="4" r="1" fill="#C4A265" opacity="0.4"/>
+    <circle cx="-14" cy="-4" r="1" fill="#C4A265" opacity="0.4"/>
+    <circle cx="-14" cy="0" r="1" fill="#C4A265" opacity="0.4"/>
+    <circle cx="-14" cy="4" r="1" fill="#C4A265" opacity="0.4"/>
+    <!-- Perforated dots right -->
+    <circle cx="17" cy="-4" r="1" fill="#C4A265" opacity="0.4"/>
+    <circle cx="17" cy="0" r="1" fill="#C4A265" opacity="0.4"/>
+    <circle cx="17" cy="4" r="1" fill="#C4A265" opacity="0.4"/>
+    <circle cx="14" cy="-4" r="1" fill="#C4A265" opacity="0.4"/>
+    <circle cx="14" cy="0" r="1" fill="#C4A265" opacity="0.4"/>
+    <circle cx="14" cy="4" r="1" fill="#C4A265" opacity="0.4"/>
+    <!-- Gauze pad center -->
+    <rect x="-8" y="-5.5" width="16" height="11" rx="1" fill="#F5F0E8" opacity="0.7"/>
   </g>
-  <!-- Check mark -->
-  <g transform="translate(72,78)">
-    <circle cx="0" cy="0" r="14" fill="#22c55e" opacity="0.9"/>
-    <polyline points="-6,0 -2,5 7,-5" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- === BAND-AID / HANSAPLAST #2 (smaller, upper crack) === -->
+  <g transform="translate(147, 103) rotate(15)">
+    <rect x="-16" y="-6" width="32" height="12" rx="2.5" ry="2.5" fill="url(#bandaid)" stroke="#C4A265" stroke-width="0.5"/>
+    <!-- Perforated dots left -->
+    <circle cx="-12" cy="-3" r="0.8" fill="#C4A265" opacity="0.4"/>
+    <circle cx="-12" cy="0" r="0.8" fill="#C4A265" opacity="0.4"/>
+    <circle cx="-12" cy="3" r="0.8" fill="#C4A265" opacity="0.4"/>
+    <circle cx="-10" cy="-3" r="0.8" fill="#C4A265" opacity="0.4"/>
+    <circle cx="-10" cy="0" r="0.8" fill="#C4A265" opacity="0.4"/>
+    <circle cx="-10" cy="3" r="0.8" fill="#C4A265" opacity="0.4"/>
+    <!-- Perforated dots right -->
+    <circle cx="12" cy="-3" r="0.8" fill="#C4A265" opacity="0.4"/>
+    <circle cx="12" cy="0" r="0.8" fill="#C4A265" opacity="0.4"/>
+    <circle cx="12" cy="3" r="0.8" fill="#C4A265" opacity="0.4"/>
+    <circle cx="10" cy="-3" r="0.8" fill="#C4A265" opacity="0.4"/>
+    <circle cx="10" cy="0" r="0.8" fill="#C4A265" opacity="0.4"/>
+    <circle cx="10" cy="3" r="0.8" fill="#C4A265" opacity="0.4"/>
+    <!-- Gauze pad center -->
+    <rect x="-6" y="-4" width="12" height="8" rx="1" fill="#F5F0E8" opacity="0.7"/>
   </g>
 </svg>

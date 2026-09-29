@@ -26,7 +26,7 @@ Also works for **9router** and other providers that use Google Antigravity / Gem
 
 ---
 
-[Why This Happens](#-why-this-happens) · [Install](#-install) · [Usage](#-usage) · [AI Agent Guide](#-ai-agent-integration) · [Troubleshooting](#-troubleshooting)
+[Why This Happens](#why-this-happens) · [Install](#install) · [Usage](#usage) · [AI Agent Guide](#ai-agent-integration) · [Troubleshooting](#troubleshooting)
 
 </div>
 
@@ -40,7 +40,7 @@ Designed to be used by humans **and AI coding agents** — clone, run, done.
 
 <br>
 
-## 🔍 Why This Happens
+## Why This Happens
 
 Based on direct investigation into Google's account backend, there are **3 root causes:**
 
@@ -54,7 +54,7 @@ Based on direct investigation into Google's account backend, there are **3 root 
 
 <br>
 
-## 📦 Install
+## Install
 
 ```bash
 git clone https://github.com/fulldiagnose/antigravity-fixer.git
@@ -66,7 +66,7 @@ pip install -r requirements.txt
 
 <br>
 
-## 🚀 Usage
+## Usage
 
 ### Diagnose account
 
@@ -134,7 +134,7 @@ If the browser can't be opened automatically, the URL is printed to terminal.
 
 <br>
 
-## 🤖 AI Agent Integration
+## AI Agent Integration
 
 This tool is designed to be called by AI coding agents (Hermes, Aider, Cursor, Codex, etc).
 
@@ -167,7 +167,7 @@ Step 5 → Test: agy -p "say ok"
 
 <br>
 
-## 🛠 Troubleshooting
+## Troubleshooting
 
 <details>
 <summary><b>Error persists after fix</b></summary>
@@ -216,7 +216,7 @@ then follow the same fix steps. The error message might differ slightly, but the
 
 <br>
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 antigravity-fixer/
@@ -233,7 +233,7 @@ antigravity-fixer/
 
 <br>
 
-## ⚠️ Security
+## Security
 
 - **Passwords** are only prompted at runtime via `getpass` — never written to disk or logs
 - **Browser sessions** are ephemeral (headless, no persistent state)
@@ -242,14 +242,14 @@ antigravity-fixer/
 
 <br>
 
-## 🌍 Supported Countries
+## Supported Countries
 
 Antigravity is available in **190+ countries** including Indonesia, Malaysia, Singapore, and more.  
 Full list: [`constants.py`](antigravity_fixer/constants.py) or [official Google docs](https://developers.google.com/gemini-code-assist/resources/available-locations).
 
 <br>
 
-## 📄 License
+## License
 
 [MIT](LICENSE) — free to use, modify, and distribute.
 
