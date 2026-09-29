@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#16213e"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="30" y1="30" x2="90" y2="90" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#e94560"/>
+      <stop offset="100%" stop-color="#0f3460"/>
+    </linearGradient>
+  </defs>
+  <rect width="120" height="120" rx="24" fill="url(#bg)"/>
+  <!-- Wrench -->
+  <g transform="translate(60,60) rotate(-45)">
+    <rect x="-6" y="-30" width="12" height="40" rx="3" fill="#e94560"/>
+    <circle cx="0" cy="-30" r="14" fill="none" stroke="#e94560" stroke-width="5"/>
+    <circle cx="0" cy="-30" r="6" fill="url(#bg)"/>
+    <rect x="-4" y="8" width="8" height="22" rx="2" fill="#e94560" opacity="0.7"/>
+  </g>
+  <!-- Check mark -->
+  <g transform="translate(72,78)">
+    <circle cx="0" cy="0" r="14" fill="#22c55e" opacity="0.9"/>
+    <polyline points="-6,0 -2,5 7,-5" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+</svg>
