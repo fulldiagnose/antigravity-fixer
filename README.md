@@ -139,28 +139,24 @@ Step 3 → agy
 
 Most common cause: **age verification not completed.**
 
-```bash
-python fix.py open-age-url --email you@gmail.com
-```
-
-Open the link, choose "Take a selfie", follow the instructions. Approval is usually instant.  
-After that, run `python fix.py clean` and test again.
+1. Open `https://myaccount.google.com/age-verification` in your browser.
+2. Choose "Take a selfie" and follow the on-screen instructions.
+3. Once approved, run `python fix.py --clean-only` and launch `agy` again.
 </details>
 
 <details>
 <summary><b>Browser login timeout</b></summary>
 
-- Make sure your internet connection is stable
-- Disable VPN if active
-- Google sometimes asks for QR code verification → click **"Try another way"** → choose SMS
+- Make sure your internet connection is stable.
+- Disable VPN or proxy if active.
 </details>
 
 <details>
 <summary><b>Credentials not removed</b></summary>
 
-Run terminal as **Administrator**, then:
+Run terminal as **Administrator** (Windows) or with proper permissions, then run:
 ```bash
-python fix.py clean
+python fix.py --clean-only
 ```
 </details>
 
