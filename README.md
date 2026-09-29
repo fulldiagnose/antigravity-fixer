@@ -34,27 +34,7 @@ Also works for **9router** and other providers that use Google Antigravity / Gem
 
 ### How It Works
 
-```mermaid
-graph LR
-    A["⊘ Error 403"] --> B["◉ Diagnose"]
-    B --> C{"◇ Age Verified?"}
-    C -- No --> D["▤ Selfie Verify"]
-    D --> E["⌧ Clean Cache"]
-    C -- Yes --> E
-    E --> F{"◇ Still Failing?"}
-    F -- Yes --> G["⟲ Full Fix"]
-    G --> H["● Working"]
-    F -- No --> H
-
-    style A fill:#212121,color:#fff,stroke:#424242
-    style B fill:#212121,color:#fff,stroke:#424242
-    style C fill:#313131,color:#fff,stroke:#424242
-    style D fill:#212121,color:#fff,stroke:#424242
-    style E fill:#212121,color:#fff,stroke:#424242
-    style F fill:#313131,color:#fff,stroke:#424242
-    style G fill:#212121,color:#fff,stroke:#424242
-    style H fill:#1b5e20,color:#fff,stroke:#2e7d32
-```
+<img src="https://raw.githubusercontent.com/fulldiagnose/antigravity-fixer/main/assets/how-it-works.png" alt="How It Works" width="100%">
 
 ---
 
