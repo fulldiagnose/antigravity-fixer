@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/fulldiagnose/antigravity-fixer/main/assets/logo.svg" width="120" alt="Antigravity Fixer">
+<img src="https://raw.githubusercontent.com/fulldiagnose/antigravity-fixer/main/assets/logo.png" width="140" alt="Antigravity Fixer">
 
 # Antigravity Fixer
 
