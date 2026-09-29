@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Antigravity Fixer — resolves 'not eligible' errors for Google Antigravity.
+"""Antigravity Fixer — resolves 'not eligible' errors for Google Antigravity & 9router.
 
-Usage:
-    python fix.py diagnose --email YOUR@gmail.com
-    python fix.py clean
-    python fix.py fix --email YOUR@gmail.com
-    python fix.py open-age-url --email YOUR@gmail.com
+Interactive mode:
+    python fix.py
+
+CLI mode:
+    python fix.py --clean-only
 
 No passwords or tokens are stored. All browser sessions are ephemeral.
 """
@@ -13,173 +13,216 @@ No passwords or tokens are stored. All browser sessions are ephemeral.
 import argparse
 import getpass
 import sys
+import time
+
+from rich.console import Console
+from rich.panel import Panel
+from rich.prompt import Prompt
+from rich.live import Live
+from rich.spinner import Spinner
+from rich.align import Align
+from rich import box
 
 from antigravity_fixer.cleaner import clean_all
-from antigravity_fixer.checker import diagnose
-from antigravity_fixer.browser import revoke_antigravity_app, open_auth_in_browser
+from antigravity_fixer.browser import revoke_antigravity_app, open_in_incognito
+
+console = Console()
+
+BANNER = r"""
+     ___          __  _                       _ __         _______
+    /   |  ____  / /_(_)___ __________ __   __(_) /___  __/ ____(_)  _____  _____
+   / /| | / __ \/ __/ / __ `/ ___/ __ `/ | / / / __/ / / / /_  / / |/ / _ \/ ___/
+  / ___ |/ / / / /_/ / /_/ / /  / /_/ /| |/ / / /_/ /_/ / __/ / />  </  __/ /
+ /_/  |_/_/ /_/\__/_/\__, /_/   \__,_/ |___/_/\__/\__, /_/   /_/_/|_|\___/_/
+                    /____/                        /____/
+"""
+
+# ─── BILINGUAL STRINGS ──────────────────────────────────────────────────────
+
+STRINGS = {
+    "id": {
+        "subtitle": "Tool otomatis perbaiki error 403 / Not Eligible Google Antigravity & 9router",
+        "email_title": "Email Akun Google",
+        "email_hint": "Gunakan akun personal @gmail.com (bukan Google Workspace / kampus)",
+        "email_label": "Email",
+        "pass_title": "Password Akun",
+        "pass_hint": "Password aman: hanya diproses di memori sesi ini, tidak pernah disimpan",
+        "pass_label": "Password",
+        "step1_title": "Langkah 1/3: Bersihkan Cache & Kredensial Stale",
+        "cleaning": "Menutup proses dan membersihkan cache .gemini serta credential manager...",
+        "clean_done": "[green]✓[/green] Cache lokal dan token lama berhasil dibersihkan.",
+        "step2_title": "Langkah 2/3: Cabut Izin App Antigravity Lama (Revoke)",
+        "revoking": "Mencabut koneksi OAuth Antigravity lama di akun Google...",
+        "revoke_success": "[green]✓[/green] Izin app lama berhasil dicabut.",
+        "revoke_skipped": "[yellow]⚠[/yellow] Izin app sudah bersih atau tidak ditemukan.",
+        "step3_title": "Langkah 3/3: Verifikasi Umur Akun Google (Selfie)",
+        "step3_desc": "Google memblokir Antigravity (403) jika akun belum terverifikasi usia.\nBrowser Incognito otomatis dibuka ke halaman verifikasi resmi Google.",
+        "step3_instruction": "1. Login dengan akun Google kamu di jendela browser yang terbuka.\n2. Pilih opsi [bold]'Ambil selfie'[/bold] (biasanya langsung disetujui dalam 1 menit).\n3. Selesaikan selfie, lalu kembali ke terminal ini.",
+        "press_enter_step3": "Tekan ENTER jika sudah menyelesaikan verifikasi selfie...",
+        "final_title": "Perbaikan Selesai! Siap Login Ulang",
+        "final_desc": "Akun dan cache sudah bersih total!\nSekarang jalankan perintah Antigravity resmi di terminal untuk login baru:\n\n  👉 [bold cyan]agy -p \"halo\"[/bold cyan]\n\nAntigravity akan otomatis membuka browser resmi Google untuk login tanpa error 403.",
+        "clean_only_done": "[bold green]Selesai![/bold green] Cache lokal dan kredensial lama berhasil dibersihkan.",
+    },
+    "en": {
+        "subtitle": "Automated fix for Google Antigravity & 9router 403 / Not Eligible errors",
+        "email_title": "Google Account Email",
+        "email_hint": "Must be a personal @gmail.com account (not Google Workspace)",
+        "email_label": "Email",
+        "pass_title": "Account Password",
+        "pass_hint": "Secure: only used in-memory during this session, never saved",
+        "pass_label": "Password",
+        "step1_title": "Step 1/3: Purge Stale Cache & Credentials",
+        "cleaning": "Stopping background processes and purging .gemini cache & credentials...",
+        "clean_done": "[green]✓[/green] Local cache and stale tokens successfully cleared.",
+        "step2_title": "Step 2/3: Revoke Stale Antigravity OAuth App Connection",
+        "revoking": "Revoking old Antigravity OAuth connection from Google account...",
+        "revoke_success": "[green]✓[/green] Old OAuth permissions revoked successfully.",
+        "revoke_skipped": "[yellow]⚠[/yellow] Old OAuth permissions already clean or not found.",
+        "step3_title": "Step 3/3: Google Account Age Verification (Selfie)",
+        "step3_desc": "Google blocks Antigravity (403) if your account lacks age verification.\nAn Incognito browser is opening to the official Google verification page.",
+        "step3_instruction": "1. Sign in with your Google account in the opened browser window.\n2. Choose [bold]'Take a selfie'[/bold] (approval is usually instant within 1 min).\n3. Finish selfie verification, then return to this terminal.",
+        "press_enter_step3": "Press ENTER after completing selfie verification...",
+        "final_title": "Fix Complete! Ready for Fresh Login",
+        "final_desc": "Your account and cache are now 100% clean!\nRun official Antigravity CLI in terminal to re-login:\n\n  👉 [bold cyan]agy -p \"hello\"[/bold cyan]\n\nAntigravity will open the official login page with zero 403 errors.",
+        "clean_only_done": "[bold green]Done![/bold green] Local cache and stale credentials purged.",
+    }
+}
+
+# ─── HELPERS ────────────────────────────────────────────────────────────────
+
+def show_banner(s):
+    console.print(BANNER, style="bold cyan", highlight=False)
+    console.print(Align.center(f"[dim]{s['subtitle']}[/dim]"))
+    console.print()
 
 
-def cmd_diagnose(args):
-    """Run full account diagnosis."""
-    password = args.password or getpass.getpass(f"Password for {args.email}: ")
-    results = diagnose(args.email, password)
+def step_spinner(text, duration=1.5):
+    with Live(Spinner("dots", text=text, style="cyan"), console=console, refresh_per_second=12):
+        time.sleep(duration)
 
-    print("\n" + "=" * 50)
-    print("DIAGNOSIS RESULTS")
-    print("=" * 50)
 
-    if results["error"]:
-        print(f"\nERROR: {results['error']}")
-        return 1
+def pick_language():
+    console.print(BANNER, style="bold cyan", highlight=False)
+    console.print(Panel(
+        "  [bold cyan]1[/bold cyan]  🇮🇩  Bahasa Indonesia\n"
+        "  [bold cyan]2[/bold cyan]  🇺🇸  English",
+        title="[bold white]Pilih Bahasa / Select Language[/bold white]",
+        border_style="cyan",
+        box=box.ROUNDED,
+        padding=(1, 2),
+    ))
+    lang = Prompt.ask("  [bold cyan]›[/bold cyan]", choices=["1", "2"], default="1")
+    console.clear()
+    return STRINGS["id"] if lang == "1" else STRINGS["en"]
 
-    age = results["age_verification"]
-    if age:
-        if age["verified"]:
-            print("\n  [OK]  Age verification: completed")
+
+# ─── MAIN PIPELINE ──────────────────────────────────────────────────────────
+
+def run_pipeline(email, password, s):
+    show_banner(s)
+
+    # ── LANGKAH 1: Bersihkan cache & kredensial lokal
+    console.print(Panel(f"[bold white]{s['step1_title']}[/bold white]", border_style="cyan", box=box.ROUNDED))
+    step_spinner(s["cleaning"], 1.5)
+    clean_all()
+    console.print(f"  {s['clean_done']}\n")
+
+    # ── LANGKAH 2: Otomatis Cabut Izin OAuth Lama (Revoke)
+    console.print(Panel(f"[bold white]{s['step2_title']}[/bold white]", border_style="cyan", box=box.ROUNDED))
+    step_spinner(s["revoking"], 2.0)
+    try:
+        ok = revoke_antigravity_app(email, password)
+        if ok:
+            console.print(f"  {s['revoke_success']}\n")
         else:
-            print("\n  [!!]  Age verification: NOT COMPLETED")
-            print("        → Go to https://myaccount.google.com/age-verification")
-            print("        → Choose 'Take a selfie' and follow instructions")
-            print("        → This is required before Antigravity will work")
+            console.print(f"  {s['revoke_skipped']}\n")
+    except Exception as e:
+        console.print(f"  {s['revoke_skipped']}: {e}\n")
 
-    country = results["country"]
-    if country:
-        print(f"\n  [OK]  Country: {country['country']}")
-
-    sub = results["subscription"]
-    if sub:
-        print(f"\n  [OK]  Subscription: {sub['plan']}")
-
-    apps = results["connected_apps"]
-    if apps:
-        status = "yes" if apps["antigravity_connected"] else "no"
-        print(f"\n  [--]  Antigravity app connected: {status}")
-
-    print("\n" + "=" * 50)
-
-    # Recommend next steps
-    if age and not age["verified"]:
-        print("\nNext steps:")
-        print("  1. Complete age verification (link above)")
-        print("  2. Run: python fix.py clean")
-        print("  3. Run: agy (to test login)")
-        return 1
-    else:
-        print("\nAccount looks good. Run: python fix.py clean")
-        print("Then test with: agy")
-        return 0
-
-
-def cmd_clean(args):
-    """Clear all stale credentials and cache."""
-    changed = clean_all()
-    print("\nDone. Run 'agy' to test login.")
-    return 0
-
-
-def cmd_fix(args):
-    """Full fix: clean + revoke + guide re-auth."""
-    password = args.password or getpass.getpass(f"Password for {args.email}: ")
-
-    # Step 1: Clean
-    print("=" * 50)
-    print("STEP 1: Cleaning credentials")
-    print("=" * 50)
+    # Bersihkan sekali lagi setelah revoke
     clean_all()
 
-    # Step 2: Revoke old connection
-    print("\n" + "=" * 50)
-    print("STEP 2: Revoking old Antigravity app connection")
-    print("=" * 50)
-    try:
-        revoke_antigravity_app(args.email, password)
-    except Exception as e:
-        print(f"  Warning: could not revoke app connection: {e}")
-        print("  This is OK if the connection was already removed.")
+    # ── LANGKAH 3 (DI AKHIR): Minta Verifikasi Umur (Selfie)
+    console.print()
+    age_url = "https://myaccount.google.com/age-verification"
+    console.print(Panel(
+        f"[bold white]{s['step3_title']}[/bold white]\n\n"
+        f"{s['step3_desc']}\n\n"
+        f"Link: [bold cyan underline]{age_url}[/bold cyan underline]\n\n"
+        f"{s['step3_instruction']}",
+        border_style="yellow",
+        box=box.ROUNDED,
+        padding=(1, 2)
+    ))
+    step_spinner("Opening Incognito browser...", 1.0)
+    open_in_incognito(age_url)
+    Prompt.ask(f"\n[bold yellow]👉 {s['press_enter_step3']}[/bold yellow]")
 
-    # Step 3: Open browser for fresh login
-    print("\n" + "=" * 50)
-    print("STEP 3: Re-authenticate")
-    print("=" * 50)
-    print("A browser will open for fresh Antigravity login.")
-    print("Complete the login, then run 'agy' to verify.\n")
-    open_auth_in_browser()
+    # Bersihkan cache terakhir kali agar fresh setelah verifikasi selfie
+    clean_all()
 
+    # ── SELESAI & INSTRUKSI LOGIN
+    console.print()
+    console.print(Panel(
+        f"[bold green]{s['final_title']}[/bold green]\n\n{s['final_desc']}",
+        border_style="green",
+        box=box.ROUNDED,
+        padding=(1, 2)
+    ))
     return 0
 
 
-def cmd_open_age_url(args):
-    """Open age verification page in the default browser."""
-    import subprocess
-    import sys
-
-    url = "https://myaccount.google.com/age-verification"
-    print(f"Opening age verification page...")
-    print(f"URL: {url}")
-    print(f"Login with: {args.email}\n")
-
-    try:
-        if sys.platform == "win32":
-            subprocess.Popen(["cmd", "/c", "start", url], shell=False)
-        elif sys.platform == "darwin":
-            subprocess.Popen(["open", url])
-        else:
-            subprocess.Popen(["xdg-open", url])
-    except Exception:
-        print(f"Open this URL in your browser:\n{url}")
-
-    print("\nAfter verification, run: python fix.py clean")
-    print("Then test with: agy")
-    return 0
-
+# ─── ENTRY POINT ────────────────────────────────────────────────────────────
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Fix 'not eligible' errors for Google Antigravity",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  python fix.py diagnose --email me@gmail.com
-  python fix.py clean
-  python fix.py fix --email me@gmail.com
-  python fix.py open-age-url --email me@gmail.com
-
-Root causes of the 403 error:
-  1. Age verification not completed → use open-age-url
-  2. Stale credentials → use clean
-  3. All of the above → use fix
-        """,
-    )
-
-    sub = parser.add_subparsers(dest="command", required=True)
-
-    # diagnose
-    p_diag = sub.add_parser("diagnose", help="Check account eligibility status")
-    p_diag.add_argument("--email", required=True, help="Google account email")
-    p_diag.add_argument("--password", help="Password (will prompt if not provided)")
-
-    # clean
-    sub.add_parser("clean", help="Clear stale credentials and cache")
-
-    # fix
-    p_fix = sub.add_parser("fix", help="Full fix: clean + revoke + re-auth")
-    p_fix.add_argument("--email", required=True, help="Google account email")
-    p_fix.add_argument("--password", help="Password (will prompt if not provided)")
-
-    # open-age-url
-    p_age = sub.add_parser("open-age-url", help="Open age verification page in browser")
-    p_age.add_argument("--email", required=True, help="Google account email")
+    parser = argparse.ArgumentParser(description="Fix 403 / Not Eligible errors for Google Antigravity & 9router")
+    parser.add_argument("--clean-only", action="store_true", help="Only clean local cache and processes")
+    parser.add_argument("--uninstall", action="store_true", help="Uninstall all dependencies and clean up")
+    parser.add_argument("--lang", choices=["id", "en"], default="id", help="Language choice for CLI mode")
 
     args = parser.parse_args()
 
-    commands = {
-        "diagnose": cmd_diagnose,
-        "clean": cmd_clean,
-        "fix": cmd_fix,
-        "open-age-url": cmd_open_age_url,
-    }
+    if args.uninstall:
+        import subprocess
+        show_banner(STRINGS[args.lang])
+        console.print("[yellow]Uninstalling dependencies...[/yellow]")
+        subprocess.run([sys.executable, "-m", "pip", "uninstall", "-r", "requirements.txt", "-y"])
+        console.print(Panel(
+            "[bold green]Uninstalled successfully![/bold green]\n\n"
+            "Dependencies (camoufox, rich) have been removed.\n"
+            "You can now safely delete the [bold cyan]antigravity-fixer[/bold cyan] folder.",
+            border_style="green",
+            box=box.ROUNDED,
+            padding=(1, 2)
+        ))
+        sys.exit(0)
 
-    sys.exit(commands[args.command](args))
+    if args.clean_only:
+        s = STRINGS[args.lang]
+        show_banner(s)
+        clean_all()
+        console.print(Panel(s["clean_only_done"], border_style="green"))
+        sys.exit(0)
+
+    s = pick_language()
+    show_banner(s)
+
+    console.print(Panel(
+        f"[bold white]{s['email_title']}[/bold white]\n[dim]{s['email_hint']}[/dim]",
+        border_style="cyan", box=box.ROUNDED, padding=(1, 2),
+    ))
+    email = Prompt.ask(f"  [bold cyan]{s['email_label']}[/bold cyan]").strip()
+
+    console.print()
+    console.print(Panel(
+        f"[bold white]{s['pass_title']}[/bold white] [bold yellow]{email}[/bold yellow]\n"
+        f"[dim]{s['pass_hint']}[/dim]",
+        border_style="cyan", box=box.ROUNDED, padding=(1, 2),
+    ))
+    password = getpass.getpass(f"  {s['pass_label']}: ")
+
+    console.clear()
+    sys.exit(run_pipeline(email, password, s))
 
 
 if __name__ == "__main__":

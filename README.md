@@ -38,7 +38,7 @@ Also works for **9router** and other providers that use Google Antigravity / Gem
 
 ---
 
-[Why This Happens](#why-this-happens) · [Install](#install) · [Usage](#usage) · [AI Agent Guide](#ai-agent-integration) · [Troubleshooting](#troubleshooting)
+[Prerequisites](#prerequisites) · [Install](#install) · [Usage](#usage) · [AI Agent Guide](#ai-agent-integration) · [Uninstallation](#uninstallation) · [Troubleshooting](#troubleshooting)
 
 </div>
 
@@ -52,6 +52,13 @@ Designed to be used by humans **and AI coding agents** — clone, run, done.
 
 <br>
 
+## Prerequisites
+
+Before running this tool, ensure you have:
+- **Google Antigravity** installed — either the CLI (`agy`) or Antigravity Desktop App / IDE.
+- **Python 3.10+** installed on your system.
+
+<br>
 
 ## Install
 
@@ -61,75 +68,41 @@ cd antigravity-fixer
 pip install -r requirements.txt
 ```
 
-**Dependencies:** only [`camoufox`](https://github.com/nichochar/camoufox) — stealth browser automation based on Firefox.
+**Dependencies:**
+- [`camoufox`](https://github.com/nichochar/camoufox) — stealth headless browser automation
+- [`rich`](https://github.com/Textualize/rich) — terminal UI, progress indicators & formatting
 
 <br>
 
 ## Usage
 
-### Diagnose account
+Run the interactive fixer:
 
 ```bash
-python fix.py diagnose --email you@gmail.com
+python fix.py
 ```
 
-Checks account status: age verification, country, subscription, connected apps.  
-Password is prompted interactively and never stored.
+Follow the guided steps on screen:
+1. **Choose Language**: Select 🇮🇩 Bahasa Indonesia or 🇺🇸 English.
+2. **Enter Google Account**: Provide your `@gmail.com` email & password (used in-memory only, never saved).
+3. **Automated Cleanup**: Kills stuck processes, removes credentials, and clears cache across:
+   - Antigravity CLI (`~/.gemini/antigravity*`, `~/.antigravity`)
+   - Antigravity Desktop App & IDE (`AppData` / `Application Support` / `.config`)
+   - Windows Credential Manager / Keychain / Secret Service
+4. **Revoke App Permission**: Automatically revokes stuck OAuth connections in your Google Account.
+5. **Selfie Verification**: Automatically launches an Incognito browser to `myaccount.google.com/age-verification`. Complete the selfie check and press Enter.
+6. **Re-login**: Test with your fresh login:
+   ```bash
+   agy -p "hello"
+   ```
 
-<details>
-<summary>Example output</summary>
+### Quick Clean Only
 
-```
-Diagnosing you@gmail.com...
-[1/5] Logging in...
-[2/5] Checking age verification...
-       Age verification: NOT VERIFIED
-[3/5] Checking country...
-       Country: Indonesia
-[4/5] Checking subscription...
-       Plan: Google AI Pro
-[5/5] Checking connected apps...
-       Antigravity app: connected
-
-==================================================
-DIAGNOSIS RESULTS
-==================================================
-
-  [!!]  Age verification: NOT COMPLETED
-        → Go to https://myaccount.google.com/age-verification
-        → Choose 'Take a selfie' and follow instructions
-
-  [OK]  Country: Indonesia
-  [OK]  Subscription: Google AI Pro
-  [--]  Antigravity app connected: yes
-```
-</details>
-
-### Clean stale credentials
+If you only want to purge local cache, credentials, and background processes without revoking:
 
 ```bash
-python fix.py clean
+python fix.py --clean-only
 ```
-
-Removes expired tokens from Windows Credential Manager + `.gemini` folder.  
-No password required, no internet needed.
-
-### Full fix (automated)
-
-```bash
-python fix.py fix --email you@gmail.com
-```
-
-Runs every step at once: kill processes → clear credentials → revoke app → open browser for fresh login.
-
-### Open age verification page
-
-```bash
-python fix.py open-age-url --email you@gmail.com
-```
-
-Opens `myaccount.google.com/age-verification` in your default browser.  
-If the browser can't be opened automatically, the URL is printed to terminal.
 
 <br>
 
@@ -229,6 +202,22 @@ antigravity-fixer/
     ├── browser.py               # OAuth revoke & re-auth
     └── constants.py             # Supported countries, URLs, paths
 ```
+
+<br>
+
+## Uninstallation
+
+To completely uninstall Antigravity Fixer and all its dependencies, just run:
+
+```bash
+python fix.py --uninstall
+```
+
+Or manually:
+```bash
+pip uninstall -r requirements.txt -y
+```
+Then simply delete the `antigravity-fixer` folder. Done!
 
 <br>
 
