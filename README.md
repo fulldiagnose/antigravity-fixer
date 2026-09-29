@@ -4,7 +4,7 @@
 
 # Antigravity Fixer
 
-**Diagnose and fix Google Antigravity eligibility errors in seconds.**
+**Diagnose and fix Google Antigravity & 9router eligibility errors in seconds.**
 
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](LICENSE)
@@ -16,40 +16,45 @@
 ```
 Eligibility check failed: Your current account is not eligible for Antigravity.
 ```
+```
+There was an unexpected issue setting up your account.
+Your current account is not eligible for gemini code assist for individuals at this time.
+```
 
-**Sound familiar?** This tool fixes it.
+**Sound familiar?** This tool fixes it.  
+Also works for **9router** and other providers that use Google Antigravity / Gemini Code Assist as their backend.
 
 ---
 
-[Kenapa Error](#-kenapa-error-ini-muncul) · [Instalasi](#-instalasi) · [Cara Pakai](#-cara-pakai) · [AI Agent Guide](#-ai-agent-integration) · [Troubleshooting](#-troubleshooting)
+[Why This Happens](#-why-this-happens) · [Install](#-install) · [Usage](#-usage) · [AI Agent Guide](#-ai-agent-integration) · [Troubleshooting](#-troubleshooting)
 
 </div>
 
 <br>
 
-## Apa Ini?
+## What Is This?
 
-Tool CLI open-source untuk mendiagnosa dan memperbaiki error **"Your current account is not eligible for Antigravity"** atau **"not eligible for Gemini Code Assist for individuals"** yang muncul saat login Google Antigravity (IDE maupun CLI).
+An open-source CLI tool that diagnoses and fixes the **"Your current account is not eligible for Antigravity"** and **"not eligible for Gemini Code Assist for individuals"** errors that show up when logging into Google Antigravity (IDE or CLI), 9router, or any provider built on top of the same backend.
 
-Didesain supaya bisa dipakai langsung oleh manusia **maupun AI coding agent** — tinggal clone, jalankan, selesai.
-
-<br>
-
-## 🔍 Kenapa Error Ini Muncul?
-
-Berdasarkan investigasi langsung ke Google account backend, ada **3 penyebab utama:**
-
-| &nbsp; | Penyebab | Dampak | Solusi |
-|:---:|----------|--------|--------|
-| **1** | Verifikasi umur belum selesai | Google backend return `VALIDATION_REQUIRED` (403) | Verifikasi via selfie di myaccount.google.com |
-| **2** | Credential cache expired/corrupt | OAuth token lama masih dipakai, tapi sudah ditolak server | Hapus `.gemini/` + Windows Credential Manager |
-| **3** | Koneksi app OAuth macet | Antigravity app permission stuck di akun Google | Revoke app connection, login ulang |
-
-> Tool ini handle **penyebab #2 dan #3 secara otomatis.** Untuk #1, perlu verifikasi manual (upload selfie/KTP) karena Google mengharuskan interaksi langsung.
+Designed to be used by humans **and AI coding agents** — clone, run, done.
 
 <br>
 
-## 📦 Instalasi
+## 🔍 Why This Happens
+
+Based on direct investigation into Google's account backend, there are **3 root causes:**
+
+| &nbsp; | Cause | Effect | Fix |
+|:---:|-------|--------|-----|
+| **1** | Age verification incomplete | Google backend returns `VALIDATION_REQUIRED` (403) | Verify via selfie at myaccount.google.com |
+| **2** | Stale credential cache | Expired OAuth token still being used, rejected by server | Clear `.gemini/` + Windows Credential Manager |
+| **3** | Stuck OAuth app connection | Antigravity app permission stuck in Google account | Revoke app connection, re-login |
+
+> This tool handles **causes #2 and #3 automatically.** Cause #1 requires manual verification (selfie/ID upload) since Google enforces direct interaction.
+
+<br>
+
+## 📦 Install
 
 ```bash
 git clone https://github.com/fulldiagnose/antigravity-fixer.git
@@ -57,23 +62,23 @@ cd antigravity-fixer
 pip install -r requirements.txt
 ```
 
-**Dependencies:** hanya [`camoufox`](https://github.com/nichochar/camoufox) — stealth browser automation berbasis Firefox.
+**Dependencies:** only [`camoufox`](https://github.com/nichochar/camoufox) — stealth browser automation based on Firefox.
 
 <br>
 
-## 🚀 Cara Pakai
+## 🚀 Usage
 
-### Diagnosa akun
+### Diagnose account
 
 ```bash
 python fix.py diagnose --email you@gmail.com
 ```
 
-Cek status akun: age verification, country, subscription, connected apps.  
-Password diminta secara interaktif (tidak tersimpan).
+Checks account status: age verification, country, subscription, connected apps.  
+Password is prompted interactively and never stored.
 
 <details>
-<summary>Contoh output</summary>
+<summary>Example output</summary>
 
 ```
 Diagnosing you@gmail.com...
@@ -101,94 +106,94 @@ DIAGNOSIS RESULTS
 ```
 </details>
 
-### Bersihin credential yang expired
+### Clean stale credentials
 
 ```bash
 python fix.py clean
 ```
 
-Hapus token lama dari Windows Credential Manager + folder `.gemini`.  
-Tidak butuh password, tidak butuh internet.
+Removes expired tokens from Windows Credential Manager + `.gemini` folder.  
+No password required, no internet needed.
 
-### Full fix (otomatis)
+### Full fix (automated)
 
 ```bash
 python fix.py fix --email you@gmail.com
 ```
 
-Jalankan semua step sekaligus: kill proses → hapus credential → revoke app → buka browser untuk login ulang.
+Runs every step at once: kill processes → clear credentials → revoke app → open browser for fresh login.
 
-### Buka halaman verifikasi umur
+### Open age verification page
 
 ```bash
 python fix.py open-age-url --email you@gmail.com
 ```
 
-Buka `myaccount.google.com/age-verification` di browser default.  
-Kalau browser tidak bisa dibuka otomatis, URL ditampilkan di terminal.
+Opens `myaccount.google.com/age-verification` in your default browser.  
+If the browser can't be opened automatically, the URL is printed to terminal.
 
 <br>
 
 ## 🤖 AI Agent Integration
 
-Tool ini didesain untuk dipanggil oleh AI coding agent (Hermes, Aider, Cursor, Codex, dll).
+This tool is designed to be called by AI coding agents (Hermes, Aider, Cursor, Codex, etc).
 
 **Recommended workflow:**
 
 ```
 Step 1 → python fix.py diagnose --email <email>
-         Baca output, identifikasi masalah
+         Read output, identify the problem
 
-Step 2 → Kalau age verification belum:
-         Instruksikan user buka https://myaccount.google.com/age-verification
-         Verifikasi pakai selfie/KTP (± 1 menit, auto-approved)
+Step 2 → If age verification is incomplete:
+         Instruct user to open https://myaccount.google.com/age-verification
+         Verify via selfie/ID (± 1 minute, auto-approved)
 
 Step 3 → python fix.py clean
-         Hapus credential stale
+         Clear stale credentials
 
-Step 4 → Kalau masih error:
+Step 4 → If still failing:
          python fix.py fix --email <email>
          Full reset: clean + revoke + re-auth
 
 Step 5 → Test: agy -p "say ok"
-         Kalau output normal, akun sudah fix
+         If output is normal, account is fixed
 ```
 
 **Exit codes:**
-| Code | Artinya |
+| Code | Meaning |
 |------|---------|
-| `0` | Berhasil / akun OK |
-| `1` | Ada masalah ditemukan (lihat output) |
+| `0` | Success / account OK |
+| `1` | Problem found (check output) |
 
 <br>
 
 ## 🛠 Troubleshooting
 
 <details>
-<summary><b>Error masih muncul setelah fix</b></summary>
+<summary><b>Error persists after fix</b></summary>
 
-Penyebab paling umum: **verifikasi umur belum selesai.**
+Most common cause: **age verification not completed.**
 
 ```bash
 python fix.py open-age-url --email you@gmail.com
 ```
 
-Buka link, pilih "Take a selfie", ikuti instruksi. Approval biasanya instan.  
-Setelah itu, jalankan `python fix.py clean` lalu test ulang.
+Open the link, choose "Take a selfie", follow the instructions. Approval is usually instant.  
+After that, run `python fix.py clean` and test again.
 </details>
 
 <details>
-<summary><b>Login timeout di browser</b></summary>
+<summary><b>Browser login timeout</b></summary>
 
-- Pastikan koneksi internet stabil
-- Matikan VPN kalau aktif
-- Google kadang minta QR code verification → klik **"Try another way"** → pilih SMS
+- Make sure your internet connection is stable
+- Disable VPN if active
+- Google sometimes asks for QR code verification → click **"Try another way"** → choose SMS
 </details>
 
 <details>
-<summary><b>Credential tidak terhapus</b></summary>
+<summary><b>Credentials not removed</b></summary>
 
-Jalankan terminal sebagai **Administrator**, lalu:
+Run terminal as **Administrator**, then:
 ```bash
 python fix.py clean
 ```
@@ -197,13 +202,21 @@ python fix.py clean
 <details>
 <summary><b>Workspace / G Suite account</b></summary>
 
-Antigravity hanya support **akun personal `@gmail.com`**.  
-Akun Google Workspace (email kantor/sekolah) **tidak eligible** — ini limitasi dari Google, bukan bug.
+Antigravity only supports **personal `@gmail.com` accounts**.  
+Google Workspace accounts (work/school email) are **not eligible** — this is a Google limitation, not a bug.
+</details>
+
+<details>
+<summary><b>9router / third-party provider errors</b></summary>
+
+9router and similar providers route requests through Google Antigravity / Gemini Code Assist.  
+The same root causes apply — run `python fix.py diagnose` to identify the issue,  
+then follow the same fix steps. The error message might differ slightly, but the solution is identical.
 </details>
 
 <br>
 
-## 📁 Struktur Project
+## 📁 Project Structure
 
 ```
 antigravity-fixer/
@@ -220,25 +233,25 @@ antigravity-fixer/
 
 <br>
 
-## ⚠️ Catatan Keamanan
+## ⚠️ Security
 
-- **Password** hanya diminta saat runtime via `getpass` — tidak pernah disimpan ke file/log
-- **Browser session** bersifat ephemeral (headless, tidak menyimpan state)
-- Tool ini **tidak mengirim data ke server manapun** — semua operasi lokal atau ke Google account resmi
-- Source code terbuka — audit sendiri kalau ragu
+- **Passwords** are only prompted at runtime via `getpass` — never written to disk or logs
+- **Browser sessions** are ephemeral (headless, no persistent state)
+- This tool **does not send data to any external server** — all operations are local or directed at official Google account pages
+- Source code is open — audit it yourself if in doubt
 
 <br>
 
 ## 🌍 Supported Countries
 
-Antigravity tersedia di **190+ negara** termasuk Indonesia, Malaysia, Singapore, dll.  
-Daftar lengkap: [`constants.py`](antigravity_fixer/constants.py) atau [dokumentasi resmi Google](https://developers.google.com/gemini-code-assist/resources/available-locations).
+Antigravity is available in **190+ countries** including Indonesia, Malaysia, Singapore, and more.  
+Full list: [`constants.py`](antigravity_fixer/constants.py) or [official Google docs](https://developers.google.com/gemini-code-assist/resources/available-locations).
 
 <br>
 
 ## 📄 License
 
-[MIT](LICENSE) — bebas dipakai, dimodifikasi, didistribusikan.
+[MIT](LICENSE) — free to use, modify, and distribute.
 
 <br>
 
@@ -246,7 +259,7 @@ Daftar lengkap: [`constants.py`](antigravity_fixer/constants.py) atau [dokumenta
 
 ---
 
-**Dibuat karena Google gak kasih error message yang jelas** 🙃
+**Built because Google doesn't give you a clear error message** 🙃
 
 [Report Bug](https://github.com/fulldiagnose/antigravity-fixer/issues) · [Request Feature](https://github.com/fulldiagnose/antigravity-fixer/issues)
 
