@@ -8,7 +8,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Windows-0078D4?style=flat-square&logo=windows&logoColor=white)](https://github.com/fulldiagnose/antigravity-fixer)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20·%20Linux%20·%20macOS-0078D4?style=flat-square)](https://github.com/fulldiagnose/antigravity-fixer)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](https://github.com/fulldiagnose/antigravity-fixer/pulls)
 
 <br>

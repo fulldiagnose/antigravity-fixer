@@ -1,34 +1,64 @@
 """Clean stale Antigravity credentials and cache."""
 
 import os
+import sys
 import subprocess
 import shutil
 from pathlib import Path
 
 
 def clean_credentials():
-    """Remove Antigravity entries from Windows Credential Manager."""
+    """Remove Antigravity entries from OS credential store."""
     removed = []
-    try:
-        result = subprocess.run(
-            ["cmdkey", "/list"],
-            capture_output=True, text=True, timeout=10
-        )
-        lines = result.stdout.split("\n")
-        for i, line in enumerate(lines):
-            target_line = line.strip()
-            if target_line.startswith("Target:") and any(
-                kw in target_line.lower()
-                for kw in ["gemini", "antigravity", "agy"]
-            ):
-                target = target_line.replace("Target:", "").strip()
-                # Only remove credentials that are clearly antigravity-related
-                if any(kw in target.lower() for kw in ["gemini:antigravity", "antigravity", "agy"]):
-                    subprocess.run(["cmdkey", "/delete", target],
-                                   capture_output=True, timeout=10)
-                    removed.append(target)
-    except Exception as e:
-        print(f"  Warning: credential cleanup error: {e}")
+
+    if sys.platform == "win32":
+        # Windows: use cmdkey (Credential Manager)
+        try:
+            result = subprocess.run(
+                ["cmdkey", "/list"],
+                capture_output=True, text=True, timeout=10
+            )
+            lines = result.stdout.split("\n")
+            for i, line in enumerate(lines):
+                target_line = line.strip()
+                if target_line.startswith("Target:") and any(
+                    kw in target_line.lower()
+                    for kw in ["gemini", "antigravity", "agy"]
+                ):
+                    target = target_line.replace("Target:", "").strip()
+                    if any(kw in target.lower() for kw in ["gemini:antigravity", "antigravity", "agy"]):
+                        subprocess.run(["cmdkey", "/delete", target],
+                                       capture_output=True, timeout=10)
+                        removed.append(target)
+        except Exception as e:
+            print(f"  Warning: credential cleanup error: {e}")
+
+    elif sys.platform == "darwin":
+        # macOS: use security CLI (Keychain)
+        for service in ["gemini", "antigravity", "agy"]:
+            try:
+                subprocess.run(
+                    ["security", "delete-generic-password", "-s", service],
+                    capture_output=True, timeout=10
+                )
+                removed.append(service)
+            except Exception:
+                pass
+
+    else:
+        # Linux: check for secret-tool (GNOME Keyring / libsecret)
+        for service in ["gemini", "antigravity", "agy"]:
+            try:
+                subprocess.run(
+                    ["secret-tool", "clear", "service", service],
+                    capture_output=True, timeout=10
+                )
+                removed.append(service)
+            except FileNotFoundError:
+                # secret-tool not installed — skip silently
+                break
+            except Exception:
+                pass
 
     return removed
 
@@ -53,31 +83,48 @@ def clean_cache():
 def kill_processes():
     """Kill running Antigravity/agy processes."""
     killed = []
-    for name in ["agy.exe", "Antigravity.exe"]:
-        try:
-            result = subprocess.run(
-                ["tasklist", "/FI", f"IMAGENAME eq {name}"],
-                capture_output=True, text=True, timeout=5
-            )
-            if name.replace(".exe", "") in result.stdout.lower():
-                subprocess.run(
-                    ["taskkill", "/F", "/IM", name],
-                    capture_output=True, timeout=10
+
+    if sys.platform == "win32":
+        # Windows: tasklist + taskkill + PowerShell fallback
+        for name in ["agy.exe", "Antigravity.exe"]:
+            try:
+                result = subprocess.run(
+                    ["tasklist", "/FI", f"IMAGENAME eq {name}"],
+                    capture_output=True, text=True, timeout=5
                 )
-                killed.append(name)
+                if name.replace(".exe", "") in result.stdout.lower():
+                    subprocess.run(
+                        ["taskkill", "/F", "/IM", name],
+                        capture_output=True, timeout=10
+                    )
+                    killed.append(name)
+            except Exception:
+                pass
+
+        try:
+            subprocess.run(
+                ["powershell", "-Command",
+                 "Stop-Process -Name agy -Force -ErrorAction SilentlyContinue;"
+                 "Stop-Process -Name Antigravity -Force -ErrorAction SilentlyContinue"],
+                capture_output=True, timeout=10
+            )
         except Exception:
             pass
 
-    # Also try PowerShell for reliability
-    try:
-        subprocess.run(
-            ["powershell", "-Command",
-             "Stop-Process -Name agy -Force -ErrorAction SilentlyContinue;"
-             "Stop-Process -Name Antigravity -Force -ErrorAction SilentlyContinue"],
-            capture_output=True, timeout=10
-        )
-    except Exception:
-        pass
+    else:
+        # Linux / macOS: pkill
+        for name in ["agy", "Antigravity"]:
+            try:
+                result = subprocess.run(
+                    ["pkill", "-f", name],
+                    capture_output=True, timeout=5
+                )
+                if result.returncode == 0:
+                    killed.append(name)
+            except FileNotFoundError:
+                pass
+            except Exception:
+                pass
 
     return killed
 
