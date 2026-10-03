@@ -111,6 +111,13 @@ If you only want to purge local cache, credentials, and background processes wit
 python fix.py --clean-only
 ```
 
+Before anything is removed, the tool lists the folders it will touch and asks for confirmation. These folders can hold IDE settings, extensions and chat history, so by default they are **moved** to `~/.antigravity-fixer-backup/<timestamp>/` instead of being deleted. To restore one, move it back to its original location.
+
+| Flag | Effect |
+|------|--------|
+| `-y`, `--yes` | Skip the confirmation prompt (required in non-interactive sessions) |
+| `--no-backup` | Delete folders permanently instead of moving them to the backup folder |
+
 <br>
 
 ## AI Agent Integration
@@ -123,8 +130,10 @@ This tool is designed to be called by AI coding agents (Hermes, Aider, Cursor, C
 Step 1 → Verify Google Account age verification:
          Instruct user to complete selfie check at https://myaccount.google.com/age-verification
 
-Step 2 → python fix.py --clean-only
+Step 2 → python fix.py --clean-only --yes
          Purge stale credentials, CLI cache, and Desktop App/IDE state
+         (folders are backed up to ~/.antigravity-fixer-backup; --yes is
+         required when there is no interactive terminal)
 
 Step 3 → agy
          Select option 1, let agy open Google sign-in, then copy the 4/0A... authorization code from the browser and paste it into agy
