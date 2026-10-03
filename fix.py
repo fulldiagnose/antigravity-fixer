@@ -23,7 +23,7 @@ from rich.spinner import Spinner
 from rich.align import Align
 from rich import box
 
-from antigravity_fixer.cleaner import clean_all
+from antigravity_fixer.cleaner import clean_all, confirm_cleanup, CleanupAborted
 from antigravity_fixer.browser import revoke_antigravity_app, open_in_incognito
 
 console = Console()
@@ -171,13 +171,13 @@ def launch_agy_terminal():
 
 # ─── MAIN PIPELINE ──────────────────────────────────────────────────────────
 
-def run_pipeline(email, password, s):
+def run_pipeline(email, password, s, backup=True):
     show_banner(s)
 
     # ── LANGKAH 1: Bersihkan cache & kredensial lokal
     console.print(Panel(f"[bold white]{s['step1_title']}[/bold white]", border_style="cyan", box=box.ROUNDED))
     step_spinner(s["cleaning"], 1.5)
-    clean_all()
+    clean_all(assume_yes=True, backup=backup)
     console.print(f"  {s['clean_done']}\n")
 
     # ── LANGKAH 2: Otomatis Cabut Izin OAuth Lama (Revoke)
@@ -193,7 +193,7 @@ def run_pipeline(email, password, s):
         console.print(f"  {s['revoke_skipped']}: {e}\n")
 
     # Bersihkan sekali lagi setelah revoke
-    clean_all()
+    clean_all(assume_yes=True, backup=backup)
 
     # ── LANGKAH 3 (DI AKHIR): Minta Verifikasi Umur (Selfie)
     console.print()
@@ -212,7 +212,7 @@ def run_pipeline(email, password, s):
     Prompt.ask(f"\n[bold yellow]👉 {s['press_enter_step3']}[/bold yellow]")
 
     # Bersihkan cache terakhir kali agar fresh setelah verifikasi selfie
-    clean_all()
+    clean_all(assume_yes=True, backup=backup)
 
     # ── SELESAI & INSTRUKSI LOGIN
     console.print()
@@ -236,6 +236,8 @@ def main():
     parser = argparse.ArgumentParser(description="Fix 403 / Not Eligible errors for Google Antigravity & 9router")
     parser.add_argument("--clean-only", action="store_true", help="Only clean local cache and processes")
     parser.add_argument("--uninstall", action="store_true", help="Uninstall all dependencies and clean up")
+    parser.add_argument("-y", "--yes", action="store_true", help="Skip the confirmation prompt before removing local data")
+    parser.add_argument("--no-backup", action="store_true", help="Delete folders instead of moving them to ~/.antigravity-fixer-backup")
     parser.add_argument("--lang", choices=["id", "en"], default="id", help="Language choice for CLI mode")
 
     args = parser.parse_args()
@@ -258,12 +260,23 @@ def main():
     if args.clean_only:
         s = STRINGS[args.lang]
         show_banner(s)
-        clean_all()
+        try:
+            clean_all(assume_yes=args.yes, backup=not args.no_backup)
+        except CleanupAborted as e:
+            console.print(Panel(f"[yellow]{e}[/yellow]", border_style="yellow"))
+            sys.exit(1)
         console.print(Panel(s["clean_only_done"], border_style="green"))
         sys.exit(0)
 
     s = pick_language()
     show_banner(s)
+
+    if not args.yes:
+        try:
+            confirm_cleanup(backup=not args.no_backup)
+        except CleanupAborted as e:
+            console.print(Panel(f"[yellow]{e}[/yellow]", border_style="yellow"))
+            sys.exit(1)
 
     console.print(Panel(
         f"[bold white]{s['email_title']}[/bold white]\n[dim]{s['email_hint']}[/dim]",
@@ -280,7 +293,7 @@ def main():
     password = getpass.getpass(f"  {s['pass_label']}: ")
 
     console.clear()
-    sys.exit(run_pipeline(email, password, s))
+    sys.exit(run_pipeline(email, password, s, backup=not args.no_backup))
 
 
 if __name__ == "__main__":
